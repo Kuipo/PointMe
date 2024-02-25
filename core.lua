@@ -24,7 +24,11 @@ function PointMe:CommReceived(prefix, message, distribution, sender)
     if sender ~= UnitName("player") then
         print("  Message from other");
         local success, PinData = self:Deserialize(message);
-        self:SetMapPin(PinData);
+        if PinData == "DeletePin" then
+            self:DeleteMapPin();
+        else
+            self:SetMapPin(PinData);
+        end
     else
         print("  Message from self, skipping");
     end
@@ -38,17 +42,25 @@ end
 -- @param newPinData UiMapPoint object to set
 function PointMe:SetMapPin(newPinData)
     if C_Map.HasUserWaypoint() == true then
-        -- print('User has pin, checking it');
+        print('User has pin, checking it');
         local curPinData = C_Map.GetUserWaypoint();
         if curPinData.uiMapID == newPinData.uiMapID and curPinData.position.x == newPinData.position.x and curPinData.position.y == newPinData.position.y then
-            -- print('New pin and old pin match, stopping.');
+            print('New pin and old pin match, stopping.');
         else
-            -- print('Setting new pin');
+            print('Setting new pin');
             C_Map.SetUserWaypoint(newPinData);
         end
     else
-        -- print('No pin detected, setting new pin');
+        print('No pin detected, setting new pin');
         C_Map.SetUserWaypoint(newPinData);
+    end
+end
+
+--- Deletes the map pin
+function PointMe:DeleteMapPin()
+    if C_Map.HasUserWaypoint() == true then
+        print('User has pin, deleting it');
+        C_Map.ClearUserWaypoint();
     end
 end
 
@@ -63,11 +75,23 @@ function PointMe:SendPinToComms()
     self:SendCommMessage(COMMS_PREFIX, serializedPinData, "PARTY");
 end
 
+function PointMe.SendPinDeleteToComms()
+    local serializedPinDeleteData = self:Serialize("DeletePin");
+    self:SendCommMessage(COMMS_PREFIX, serializedPinDeleteData, "PARTY");
+end
+
 function PointMe:OnMapPinChanged()
-    if IsInGroup() then
-        if C_Map.HasUserWaypoint() == true then
-            RunNextFrame(function() self:TrackWaypoint() end);
+    if C_Map.HasUserWaypoint() == true then
+        -- if the user has a waypoint, autotrack it
+        RunNextFrame(function() self:TrackWaypoint() end); -- Seems to need NextFrame to work correctly
+        -- if the user has a waypoint and is in a group, send the waypoint to comms
+        if IsInGroup() then
             self:SendPinToComms();
+        end
+    else
+        -- if the user doesnt have a waypoint, send command to delete pin to comms
+        if IsInGroup() then
+            self.SendPinDeleteToComms();
         end
     end
 end
