@@ -75,7 +75,7 @@ function PointMe:SendPinToComms()
     self:SendCommMessage(COMMS_PREFIX, serializedPinData, "PARTY");
 end
 
-function PointMe.SendPinDeleteToComms()
+function PointMe:SendPinDeleteToComms()
     local serializedPinDeleteData = self:Serialize("DeletePin");
     self:SendCommMessage(COMMS_PREFIX, serializedPinDeleteData, "PARTY");
 end
@@ -91,7 +91,7 @@ function PointMe:OnMapPinChanged()
     else
         -- if the user doesnt have a waypoint, send command to delete pin to comms
         if IsInGroup() then
-            self.SendPinDeleteToComms();
+            self:SendPinDeleteToComms();
         end
     end
 end
