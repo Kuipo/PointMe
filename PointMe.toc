@@ -4,7 +4,7 @@
 ## IconTexture: Interface\Icons\inv_misc_map_01
 ## Notes: Share map pins with party members automatically.|n|cffbbbbbbBy Kuipo
 ## Author: Kuipo
-## Version: v0.01
+## Version: v0.03
 ## OptionalDeps: Ace3
 
 embeds.xml

@@ -64,9 +64,11 @@ function PointMe:SendPinToComms()
 end
 
 function PointMe:OnMapPinChanged()
-    if C_Map.HasUserWaypoint() == true then
-        RunNextFrame(function() self:TrackWaypoint() end);
-        self:SendPinToComms();
+    if IsInGroup() then
+        if C_Map.HasUserWaypoint() == true then
+            RunNextFrame(function() self:TrackWaypoint() end);
+            self:SendPinToComms();
+        end
     end
 end
 
