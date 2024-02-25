@@ -1,0 +1,12 @@
+## Interface: 100205
+
+## Title: PointMe
+## IconTexture: Interface\Icons\inv_misc_map_01
+## Notes: Share map pins with party members automatically.|n|cffbbbbbbBy Kuipo
+## Author: Kuipo
+## Version: v0.01
+## OptionalDeps: Ace3
+
+embeds.xml
+
+core.lua
